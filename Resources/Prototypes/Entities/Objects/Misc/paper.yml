@@ -737,11 +737,14 @@
     layers:
     - state: envelope_open
       map: ["enum.EnvelopeVisualLayers.Open"]
-    - state: envelope_closed
+    - state: envelope_sealed
       map: ["enum.EnvelopeVisualLayers.Sealed"]
       visible: false
     - state: envelope_torn
       map: ["enum.EnvelopeVisualLayers.Torn"]
+      visible: false
+    - state: envelope_tampered
+      map: ["enum.EnvelopeVisualLayers.Tampered"]
       visible: false
     - state: paper_stamp-generic
       map: ["enum.PaperVisualLayers.Stamp"]
