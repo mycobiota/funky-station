@@ -38,10 +38,10 @@
       "name": "envelope_sealed_overlay"
     },
     {
-      "name": "envelope_sealed_broken"
+      "name": "envelope_tampered"
     },
     {
-      "name": "envelope_sealed_broken_overlay"
+      "name": "envelope_tampered_overlay"
     },
     {
       "name": "folder-base"

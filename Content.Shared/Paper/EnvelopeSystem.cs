@@ -15,14 +15,11 @@ public sealed class EnvelopeSystem : EntitySystem
 {
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
     [Dependency] private readonly SharedAudioSystem _audioSystem = default!;
-    [Dependency] private readonly ItemSlotsSystem _itemSlotsSystem = default!;
 
     public override void Initialize()
     {
         base.Initialize();
 
-        SubscribeLocalEvent<EnvelopeComponent, ItemSlotInsertAttemptEvent>(OnInsertAttempt);
-        SubscribeLocalEvent<EnvelopeComponent, ItemSlotEjectAttemptEvent>(OnEjectAttempt);
         SubscribeLocalEvent<EnvelopeComponent, GetVerbsEvent<AlternativeVerb>>(OnGetAltVerbs);
         SubscribeLocalEvent<EnvelopeComponent, EnvelopeDoAfterEvent>(OnDoAfter);
         SubscribeLocalEvent<EnvelopeComponent, ExaminedEvent>(OnExamine);
@@ -60,16 +57,6 @@ public sealed class EnvelopeSystem : EntitySystem
         });
     }
 
-    private void OnInsertAttempt(Entity<EnvelopeComponent> ent, ref ItemSlotInsertAttemptEvent args)
-    {
-        args.Cancelled |= ent.Comp.State != EnvelopeComponent.EnvelopeState.Open;
-    }
-
-    private void OnEjectAttempt(Entity<EnvelopeComponent> ent, ref ItemSlotEjectAttemptEvent args)
-    {
-        args.Cancelled |= ent.Comp.State == EnvelopeComponent.EnvelopeState.Sealed;
-    }
-
     private void TryStartDoAfter(Entity<EnvelopeComponent> ent, EntityUid user, TimeSpan delay)
     {
         if (ent.Comp.EnvelopeDoAfter.HasValue)
@@ -105,9 +92,6 @@ public sealed class EnvelopeSystem : EntitySystem
             _audioSystem.PlayPredicted(ent.Comp.TearSound, ent.Owner, args.User);
             ent.Comp.State = EnvelopeComponent.EnvelopeState.Torn;
             Dirty(ent.Owner, ent.Comp);
-
-            if (_itemSlotsSystem.TryGetSlot(ent.Owner, ent.Comp.SlotId, out var slotComp))
-                _itemSlotsSystem.TryEjectToHands(ent.Owner, slotComp, args.User);
         }
     }
 }

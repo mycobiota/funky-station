@@ -71,6 +71,9 @@
         mask:
         - ItemMask
   - type: Appearance
+  - type: Tag
+    tags:
+    - SpaceCash
   - type: Food
     solution: food
     delay: 7

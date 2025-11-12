@@ -19,9 +19,6 @@ public sealed partial class EnvelopeComponent : Component
     [ViewVariables, DataField, AutoNetworkedField]
     public EnvelopeState State = EnvelopeState.Open;
 
-    [DataField, ViewVariables]
-    public string SlotId = "letter_slot";
-
     /// <summary>
     /// Stores the current sealing/tearing doafter of the envelope
     /// to prevent doafter spam/prediction issues
@@ -58,7 +55,7 @@ public sealed partial class EnvelopeComponent : Component
     {
         Open,
         Sealed,
-        Torn
+        Torn,
     }
 }
 
