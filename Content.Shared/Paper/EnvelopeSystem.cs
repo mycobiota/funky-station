@@ -8,13 +8,16 @@ using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Verbs;
 using Robust.Shared.Audio.Systems;
 using Content.Shared.Examine;
+using Content.Shared.Lock;
 
 namespace Content.Shared.Paper;
 
 public sealed class EnvelopeSystem : EntitySystem
 {
+    [Dependency] private readonly IEntityManager _entityManager = default!;
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
     [Dependency] private readonly SharedAudioSystem _audioSystem = default!;
+    [Dependency] private readonly LockSystem _lockSystem = default!;
 
     public override void Initialize()
     {
@@ -83,14 +86,26 @@ public sealed class EnvelopeSystem : EntitySystem
 
         if (ent.Comp.State == EnvelopeComponent.EnvelopeState.Open)
         {
-            _audioSystem.PlayPredicted(ent.Comp.SealSound, ent.Owner, args.User);
             ent.Comp.State = EnvelopeComponent.EnvelopeState.Sealed;
+
+            // set the lock component state to locked
+            if (_entityManager.TryGetComponent<LockComponent>(ent, out var lockComponent))
+            {
+                _lockSystem.Lock(ent.Owner, args.User, lockComponent);
+            }
+
             Dirty(ent.Owner, ent.Comp);
         }
         else if (ent.Comp.State == EnvelopeComponent.EnvelopeState.Sealed)
         {
-            _audioSystem.PlayPredicted(ent.Comp.TearSound, ent.Owner, args.User);
-            ent.Comp.State = EnvelopeComponent.EnvelopeState.Torn;
+            ent.Comp.State = EnvelopeComponent.EnvelopeState.Open;
+
+            // set the lock component state to unlocked
+            if (_entityManager.TryGetComponent<LockComponent>(ent, out var lockComponent))
+            {
+                _lockSystem.Unlock(ent.Owner, args.User, lockComponent);
+            }
+
             Dirty(ent.Owner, ent.Comp);
         }
     }
