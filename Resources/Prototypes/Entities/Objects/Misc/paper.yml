@@ -840,6 +840,7 @@
     lockOnClick: False
     unlockOnClick: False
     UseAccess: False
+    showLockVerb: false
     unlockingSound: /Audio/Effects/poster_broken.ogg
     lockingSound: /Audio/Effects/packetrip.ogg
   - type: Storage

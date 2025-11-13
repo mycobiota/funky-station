@@ -49,6 +49,12 @@ public sealed partial class LockComponent : Component
     public bool UnlockOnClick = true;
 
     /// <summary>
+    /// envelope-mail: whether or not to hide the lock/unlock verb
+    /// </summary>
+    [DataField("showLockVerb"), AutoNetworkedField]
+    public bool ShowLockVerb = true;
+
+    /// <summary>
     /// Whether the lock requires access validation through <see cref="AccessReaderComponent"/>
     /// </summary>
     [DataField, AutoNetworkedField]

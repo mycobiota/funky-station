@@ -84,29 +84,38 @@ public sealed class EnvelopeSystem : EntitySystem
         if (args.Cancelled)
             return;
 
-        if (ent.Comp.State == EnvelopeComponent.EnvelopeState.Open)
+        if (_entityManager.TryGetComponent<LockComponent>(ent, out var lockComponent))
         {
-            ent.Comp.State = EnvelopeComponent.EnvelopeState.Sealed;
-
-            // set the lock component state to locked
-            if (_entityManager.TryGetComponent<LockComponent>(ent, out var lockComponent))
+            if (ent.Comp.State == EnvelopeComponent.EnvelopeState.Open)
             {
-                _lockSystem.Lock(ent.Owner, args.User, lockComponent);
+                Seal(ent, args.User, lockComponent);
             }
-
-            Dirty(ent.Owner, ent.Comp);
-        }
-        else if (ent.Comp.State == EnvelopeComponent.EnvelopeState.Sealed)
-        {
-            ent.Comp.State = EnvelopeComponent.EnvelopeState.Open;
-
-            // set the lock component state to unlocked
-            if (_entityManager.TryGetComponent<LockComponent>(ent, out var lockComponent))
+            else if (ent.Comp.State == EnvelopeComponent.EnvelopeState.Sealed)
             {
-                _lockSystem.Unlock(ent.Owner, args.User, lockComponent);
+                Unseal(ent, args.User, lockComponent);
             }
-
-            Dirty(ent.Owner, ent.Comp);
         }
+    }
+
+    private void Seal(Entity<EnvelopeComponent> ent, EntityUid user, LockComponent lockComponent)
+    {
+        ent.Comp.State = EnvelopeComponent.EnvelopeState.Sealed;
+
+        // set the lock component state to locked
+        _lockSystem.Lock(ent.Owner, user, lockComponent);
+
+        Dirty(ent.Owner, ent.Comp);
+
+    }
+
+    private void Unseal(Entity<EnvelopeComponent> ent, EntityUid user, LockComponent lockComponent)
+    {
+        ent.Comp.State = EnvelopeComponent.EnvelopeState.Open;
+
+        // set the lock component state to unlocked
+        _lockSystem.Unlock(ent.Owner, user, lockComponent);
+
+        Dirty(ent.Owner, ent.Comp);
+
     }
 }
